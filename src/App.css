@@ -28,6 +28,24 @@
   color: #61dafb;
 }
 
+
+.rep-counter {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: white;
+  font-size: 18px;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  padding: 10px; /* Padding around the content */
+  border-radius: 10px; /* Rounded corners */
+  max-width: 200px; /* Maximum width of the box */
+}
+
+.rep-counter p {
+  margin: 5px 0;
+}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -35,4 +53,22 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.welcome-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.welcome-page h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.welcome-page button {
+  padding: 10px 20px;
+  font-size: 18px;
 }
