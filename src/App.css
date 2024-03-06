@@ -28,19 +28,20 @@
   color: #61dafb;
 }
 
-
+.button{
+  background-color: #219ebc;
+}
 .rep-counter {
   position: absolute;
   top: 20px;
   right: 20px;
   color: white;
-  font-size: 18px;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-  padding: 10px; /* Padding around the content */
-  border-radius: 10px; /* Rounded corners */
-  max-width: 200px; /* Maximum width of the box */
+  font-size: 16px; /* Decrease font size */
+  background-color: #023047; /* Darken background */
+  padding: 8px; /* Decrease padding */
+  border-radius: 8px; /* Adjust border radius */
+  max-width: 150px; /* Decrease maximum width */
 }
-
 .rep-counter p {
   margin: 5px 0;
 }
@@ -71,4 +72,24 @@
 .welcome-page button {
   padding: 10px 20px;
   font-size: 18px;
+}
+
+.progress-bar-container {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 20px;
+  background-color: #39f63c;
+  border-radius: 10px;
+  overflow: hidden; /* Ensure the overflow is hidden */
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #ddd;
+  border-radius: 10px;
+  transition: width 0.5s ease-in-out; /* Smooth transition animation */
+  width: 0; /* Start with zero width */
 }

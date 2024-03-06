@@ -1,0 +1,77 @@
+/* WelcomePage.css */
+
+.welcome-page {
+    display: flex;
+    justify-content: center; /* Center items horizontally */
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%; /* Set a width to prevent full screen width */
+    margin: 0 auto; /* Center the container horizontally */
+  }
+  
+  .welcome-page h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .welcome-page button {
+    background-color: #219ebc ;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px#023047;
+  }
+  
+  .welcome-page button:hover {
+    background-color: #0056b3;
+  }
+
+  .welcome-page button.start-exercise {
+    font-size: 20px; /* Increase font size */
+    background-color:#023047; 
+    padding: 12px 24px; /* Adjust padding for better appearance */
+  }
+  
+  
+  .input-container {
+    background-color: #8ecae6;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px; /* Adjust as needed */
+    margin-bottom: 20px;
+  }
+  
+  .input-container label {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .input-container input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .input-container label input[type="checkbox"] {
+    margin-right: 5px;
+  }
+  
+  .welcome-page input[type="number"] {
+    width: 100px; /* Adjust the width as needed */
+  }

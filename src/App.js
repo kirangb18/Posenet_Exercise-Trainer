@@ -4,20 +4,23 @@ import * as posenet from "@tensorflow-models/posenet";
 import Webcam from "react-webcam";
 import { drawKeypoints, drawSkeleton } from "./utilities";
 import WelcomePage from './WelcomePage';
+import ResultPage from './ResultPage';
 import * as tf from "@tensorflow/tfjs";
 
 function App() {
+  const [expectedReps, setExpectedReps] = useState(null);
   const [isExerciseStarted, setIsExerciseStarted] = useState(false);
   const [timer, setTimer] = useState(5); // Timer countdown in seconds
   const [isVisibleTimer, setIsVisibleTimer] = useState(true); // Controls the visibility of the timer
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const progressBarRef = useRef(null); // Ref for the progress bar
   const [leftCount, setLeftCount] = useState(0);
   const [leftFlag, setLeftFlag] = useState(null);
-
-  const handleStartExercise = () => {
-    setIsExerciseStarted(true);
-  };
+  const [isLoading, setIsLoading] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const [isSpeechEnabled, setIsSpeechEnabled] = useState(false); // State to track if speech feedback is enabled
+  const speechSynthRef = useRef(window.speechSynthesis); // Reference to the SpeechSynthesis API
 
   useEffect(() => {
     if (isExerciseStarted && timer > 0) {
@@ -30,6 +33,7 @@ function App() {
     } else if (timer === 0) {
       // Hide the timer after the time limit is crossed
       setIsVisibleTimer(false);
+      setIsLoading(true);
 
       const runPosenet = async () => {
         const net = await posenet.load({
@@ -71,6 +75,7 @@ function App() {
       };
 
       const drawCanvas = (pose, video, videoWidth, videoHeight) => {
+        if (!canvasRef.current) return; // Check if canvas is initialized
         const ctx = canvasRef.current.getContext("2d");
         canvasRef.current.width = videoWidth;
         canvasRef.current.height = videoHeight;
@@ -84,10 +89,11 @@ function App() {
 
         const angle = calcAngle(leftShoulder, leftElbow, leftWrist);
 
-        ctx.font = '20px Arial';
-        ctx.fillStyle = 'white';
+        ctx.font = '0px Arial';
+        ctx.fillStyle = 'black';
         ctx.fillText(`Angle: ${angle}`, 10, 30);
       };
+
 
       const calcAngle = (a, b, c) => {
         const ax = a.x, ay = a.y;
@@ -120,15 +126,74 @@ function App() {
   useEffect(() => {
     if (leftFlag === 'up') {
       setLeftCount(prevCount => prevCount + 1);
+  
+      // Speak out the remaining reps dynamically if speech feedback is enabled
+      if (isSpeechEnabled && expectedReps !== null) {
+        const remainingReps = expectedReps - (leftCount + 1); // +1 because leftCount is not updated yet
+        if (remainingReps > 0) {
+          const message = remainingReps === 1 ? `${remainingReps} more rep to go` : `${remainingReps} more reps to go`;
+          speakMessage(message);
+        } else if (remainingReps === 0) {
+          speakMessage("Last rep");
+        }
+      }
+  
+      // If leftCount equals expectedReps, speak congratulatory message
+      if (leftCount + 1 === expectedReps && isSpeechEnabled) {
+        setTimeout(() => {
+          speakMessage(`Congratulations! you have completed ${leftCount + 1} reps.`);
+        }, 2000); // Wait for 2 seconds after last rep is detected
+      }
     }
-  }, [leftFlag]);
+  }, [leftFlag]); // Only listen for leftFlag change to speak out reps
+
+  const speakMessage = (message) => {
+    const utterance = new SpeechSynthesisUtterance(message);
+    speechSynthRef.current.speak(utterance);
+  };
+
+  const handleReset = () => {
+    setIsExerciseStarted(false);
+    setExpectedReps(null);
+    setLeftCount(0);
+    setTimer(5);
+    setIsVisibleTimer(true);
+    setIsLoading(false);
+    setShowResult(false);
+  };
+
+  const handleStartExercise = (reps) => {
+    setExpectedReps(reps);
+    setIsExerciseStarted(true);
+  };
+
+  useEffect(() => {
+    if (expectedReps !== null && leftCount === expectedReps) {
+      setTimeout(() => {
+        setShowResult(true);
+      }, 2500); // Wait for 2 seconds before showing the result page
+    }
+  }, [leftCount, expectedReps]);
+
+  useEffect(() => {
+    // Calculate progress width based on remaining reps
+    if (progressBarRef.current) {
+      const remainingReps = expectedReps - leftCount;
+      const progressWidth = `${(remainingReps / expectedReps) * 100}%`;
+      progressBarRef.current.style.width = progressWidth;
+    }
+  }, [leftCount, expectedReps]);
+
+  const handleToggleSpeech = (isEnabled) => {
+    setIsSpeechEnabled(isEnabled);
+  };
 
   return (
     <div className="App">
       <header className="App-header">
-        {!isExerciseStarted ? (
-          <WelcomePage onStartExercise={handleStartExercise} />
-        ) : (
+        {!isExerciseStarted && !showResult && <WelcomePage onStartExercise={handleStartExercise} onToggleSpeech={handleToggleSpeech} />}
+        {showResult && <ResultPage repsCompleted={leftCount} />}
+        {isExerciseStarted && !showResult && (
           <>
             <Webcam
               ref={webcamRef}
@@ -144,11 +209,20 @@ function App() {
                 height: 480
               }}
             />
+            {isLoading && (
+              <div className="loader">
+                <p>Loading...</p>
+              </div>
+            )}
             {isVisibleTimer && (
               <div style={{ position: "absolute", top: 10, left: "50%", transform: "translateX(-50%)", zIndex: 10 }}>
                 <p>Exercise starts in {timer}</p>
               </div>
             )}
+            {/* Progress Bar */}
+            <div className="progress-bar-container">
+              <div ref={progressBarRef} className="progress-bar"></div>
+            </div>
             <canvas
               ref={canvasRef}
               style={{
@@ -170,11 +244,15 @@ function App() {
           </>
         )}
       </header>
+      {showResult && <button onClick={handleReset}>Reset</button>}
     </div>
   );
 }
 
 export default App;
+
+
+
 
 
 
